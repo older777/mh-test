@@ -12,13 +12,15 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'last_name' => 'last',
-            'name' => 'admin',
-            'middle_name' => 'middle',
-            'email' => 'admin@local.localhost',
-            'phone' => '1234567',
-            'password' => bcrypt('123'),
-        ]);
+        if (! User::where('email', 'admin@local.localhost')->first()) {
+            User::create([
+                'last_name' => 'last',
+                'name' => 'admin',
+                'middle_name' => 'middle',
+                'email' => 'admin@local.localhost',
+                'phone' => '1234567',
+                'password' => bcrypt('123'),
+            ]);
+        }
     }
 }
