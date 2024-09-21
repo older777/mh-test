@@ -6,7 +6,6 @@ use App\Enums\ActionsEnum;
 use App\Http\Controllers\Controller;
 use App\Services\HistoryService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class EmailVerificationNotificationController extends Controller

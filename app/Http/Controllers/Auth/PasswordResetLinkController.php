@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\ActionsEnum;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Services\HistoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
@@ -11,14 +14,47 @@ use Illuminate\Validation\ValidationException;
 class PasswordResetLinkController extends Controller
 {
     /**
+     *  @OA\Post(
+     *     path="/api/forgot-password",
+     *     description="Сбросить пароль.",
+     *     tags={"Guest URI"},
+     *     security={{}},
+     *
+     *     @OA\RequestBody(
+     *
+     *         @OA\JsonContent(
+     *            type="object",
+     *
+     *            @OA\Property(
+     *                property="email",
+     *                type="string"
+     *            ),
+     *            example={"email": "admin@local.localhost"}
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *
+     *          @OA\JsonContent(
+     *             oneOf={
+     *
+     *                @OA\Schema(ref="#/components/schemas/Result")
+     *             }
+     *          ),
+     *          response="200",
+     *          description="ok"
+     *     ),
+     * )
+     *
      * Handle an incoming password reset link request.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): JsonResponse
     {
+        $input = $request->all();
         $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'email', 'exists:users,email'],
         ]);
 
         // We will send the password reset link to this user. Once we have attempted
@@ -34,6 +70,12 @@ class PasswordResetLinkController extends Controller
             ]);
         }
 
-        return response()->json(['status' => __($status)]);
+        $user = User::where('email', $request->email)->first();
+        HistoryService::event($user, ActionsEnum::RESET, null, $user->toArray());
+
+        return response()->json(
+            data: ['status' => true, 'message' => 'Код записан в файл: storage/logs/laravel.log'],
+            status: JsonResponse::HTTP_OK
+        );
     }
 }

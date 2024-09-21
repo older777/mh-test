@@ -22,8 +22,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/register', [RegisteredUserController::class, 'store']);
-Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
-Route::post('/reset-password', [NewPasswordController::class, 'store']);
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->middleware(['throttle:6,1']);
+Route::post('/reset-password', [NewPasswordController::class, 'store'])
+    ->middleware(['throttle:6,1'])
+    ->name('password.reset');
 
 Route::middleware(['auth:sanctum'])->prefix('auth')->group(function () {
 

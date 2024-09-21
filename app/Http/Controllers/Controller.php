@@ -73,6 +73,22 @@ use Illuminate\Routing\Controller as BaseController;
  *          description="Текущая версия Ларавела"
  *     ),
  * )
+ *
+ * @OA\Get(
+ *     path="/api/auth/user",
+ *     description="Данные пользователя",
+ *     tags={"Authenticated URI"},
+ *     security={{"sanctum": {}}},
+ *
+ *     @OA\Response(
+ *
+ *          @OA\JsonContent(
+ *              type="object"
+ *          ),
+ *          response="200",
+ *          description="ok"
+ *     ),
+ * )
  */
 class Controller extends BaseController
 {
