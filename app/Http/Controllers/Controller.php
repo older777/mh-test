@@ -75,7 +75,7 @@ use Illuminate\Routing\Controller as BaseController;
  * )
  *
  * @OA\Get(
- *     path="/api/auth/user",
+ *     path="/api/auth/me",
  *     description="Данные пользователя",
  *     tags={"Authenticated URI"},
  *     security={{"sanctum": {}}},

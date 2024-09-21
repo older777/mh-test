@@ -18,7 +18,7 @@ return new class extends Migration
             $table->json('before')->nullable();
             $table->json('after');
             $table->enum('action', ActionsEnum::values());
-            $table->timestamp('deleted_at')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
