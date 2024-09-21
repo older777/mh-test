@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,7 +30,7 @@ Route::post('/reset-password', [NewPasswordController::class, 'store'])
 
 Route::middleware(['auth:sanctum'])->prefix('auth')->group(function () {
 
-    Route::get('/user', function (Request $request) {
+    Route::get('/me', function (Request $request) {
         $user = $request->user()->loadCount('history');
 
         return $user;
@@ -45,6 +46,16 @@ Route::middleware(['auth:sanctum'])->prefix('auth')->group(function () {
     Route::controller(AuthenticatedSessionController::class)->group(function () {
         Route::get('/logout', 'destroy');
 
+    });
+
+    Route::resource('users', UserController::class);
+    Route::controller(UserController::class)->prefix('users')->group(function () {
+        Route::get('/{id}/restore', 'restore')->name('user.restore');
+        Route::delete('/{id}/force', 'delete')->name('user.force.delete');
+        Route::get('/all/trashed', 'trashedUsers')->name('user.trashed');
+        Route::delete('/group/remove', 'usersGroupRemove')->name('user.group.delete');
+        Route::post('/group/restore', 'usersGroupRestore')->name('user.group.restore');
+        Route::delete('/group/delete', 'usersGroupDelete')->name('user.group.delete');
     });
 
 });
