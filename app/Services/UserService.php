@@ -99,7 +99,7 @@ class UserService extends Service
         $user->tokens()->delete();
         $user->history()->delete();
         $user->delete();
-        HistoryService::event($user, ActionsEnum::REMOVE, null, $user->toArray());
+        HistoryService::event($user, ActionsEnum::REMOVE, $user->toArray(), ['status' => 'removed']);
     }
 
     /**
@@ -129,7 +129,7 @@ class UserService extends Service
         $user->tokens()->delete();
         $user->history()->forceDelete();
         $user->forceDelete();
-        HistoryService::event($user, ActionsEnum::DELETE, null, $user->toArray());
+        HistoryService::event($user, ActionsEnum::DELETE, $user->toArray(), ['status' => 'deleted']);
     }
 
     /**
@@ -150,7 +150,7 @@ class UserService extends Service
             $user->tokens()->delete();
             $user->history()->delete();
             $user->delete();
-            HistoryService::event($user, ActionsEnum::REMOVE, null, $user->toArray());
+            HistoryService::event($user, ActionsEnum::REMOVE, $user->toArray(), ['status' => 'removed']);
         }
 
     }
@@ -180,7 +180,7 @@ class UserService extends Service
             $user->tokens()->delete();
             $user->history()->forceDelete();
             $user->forceDelete();
-            HistoryService::event($user, ActionsEnum::DELETE, null, $user->toArray());
+            HistoryService::event($user, ActionsEnum::DELETE, $user->toArray(), ['status' => 'deleted']);
         }
     }
 }

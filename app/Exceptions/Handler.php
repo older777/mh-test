@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -50,6 +52,13 @@ class Handler extends ExceptionHandler
                 return response()->json(
                     data: ['status' => false, 'error' => $e->getMessage()],
                     status: JsonResponse::HTTP_UNAUTHORIZED,
+                );
+            }
+
+            if ($e instanceof NotFoundExceptionInterface || $e instanceof NotFoundHttpException) {
+                return response()->json(
+                    data: ['status' => false, 'error' => $e->getMessage()],
+                    status: JsonResponse::HTTP_NOT_FOUND,
                 );
             }
 
