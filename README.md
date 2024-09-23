@@ -1,66 +1,103 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Задание для MH
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### Установка
 
-## About Laravel
+Инструкция по установке. Скачать GIT-репозиторий *git clone git@github.com:older777/mh-test.git mh-test*
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Создать новый *.env* файл из *.env.example*.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Выполнить следующие команды:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+    cd mh-test
+    composer install
+    chmod 755 sail
 
-## Learning Laravel
+Ресурсы всех вендров, опубликовать все: All providers and tags
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    ./sail artisan vendor:publish 
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+![Vendor publish](/storage/app/vendor.png)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Запустить докер окружение проекту:
 
-## Laravel Sponsors
+    ./sail build
+    ./sail up
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+![Docker Sail](/storage/app/mh-1.gif)
+    
+В новом окне терминала выполнить команды:
 
-### Premium Partners
+    ./sail artisan migrate
+    ./sail artisan db:seed
+    ./sail artisan l5-swagger:generate
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Данные пользователя для авторизации логин/пароль: admin@local.localhost/123
+Данные авторизации MySQL: localhost:3306, логин/пароль: laravel/password
 
-## Contributing
+Перейти на страницу ***L5 Swagger UI*** [http://localhost/api/documentation/](http://localhost/api/documentation/). 
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### API
 
-## Code of Conduct
+Открыть вкладку "Guest URI", гостевые запросы (Санктум токен не требуется):
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+![Guest API](/storage/app/guest.png)
 
-## Security Vulnerabilities
+    GET /
+    POST /api/login
+    POST /api/reset-password
+    POST /api/forgot-password
+    POST /api/register
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Запросы "/" получить данные версии, "/api/register" - зарегистрировать нового пользователя, "/api/forgot-password" - запрос на восстановление пароля. "/api/reset-password" - сбросить пароль пользователя с помощью кода.
+Все емайл сообщения поступают в laravel.log (storage/logs/laravel.log), коды сбросов в ссылках внутри сообщений.
 
-## License
+Выполнить запрос авторизации */api/login* с данными пользователя admin, по кнопке "Try it out". Получить токен авторизации.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+![Sanctum](/storage/app/sanctum.png)
+
+Для запросов требующих аутентификацию - ввести данные токена (по кнопке *Authorize*) в модальном окне авторизации, сохранить.
+
+![Аутентификация](/storage/app/auth.png)
+
+Запросы авторизованных пользователей *Authenticated URI*:
+
+    GET /api/auth/logout
+    POST /api/auth/email/verification-notification (выслать код для подтверждения емайл)
+    GET /api/auth/verify-email/{id}/{hash} (подтвердить емайл)
+    GET /api/auth/me (информация о текущем пользователе)
+    GET /api/auth/history (список событий в таблице histories)
+    GET /api/auth/history/{history} (детальная информация события)
+    DELETE /api/auth/history/{history} (удалить событие в корзину)
+    GET /api/auth/history/{history}/restore (восстановить событие из корзины)
+    DELETE /api/auth/history/{history}/force (полное удаление события)
+    GET /api/auth/users (список пользователей)
+    GET /api/auth/users/{id} (получить детальную информацию пользователя)
+    PUT /api/auth/users/{id} (обновить данные пользователя)
+    DELETE /api/auth/users/{user} (удалить пользователя в корзину)
+    GET /api/auth/users/{id}/restore (восстановить пользователя)
+    DELETE /api/auth/users/{id}/force (полное удаление пользователя и его событий)
+    GET /api/auth/users/all/trashed (список пользователей в корзине)
+    DELETE /api/auth/users/group/remove (групповое удаление пользователей в коризину)
+    POST /api/auth/users/group/restore (групповое восстановление пользователей)
+    DELETE /api/auth/users/group/delete (групповое полное удаление пользователей)
+
+Для некоторых запросов, емайл сообщения поступают в лог storage/logs/laravel.log
+
+Пример верификации емайла:
+
+![Данные для верификации емайл](/storage/app/verificate.png)
+
+### Консольные команды
+
+Выполняются по команде *./sail artisan history:__имя_команды__*
+
+![Console](/storage/app/console.png)
+
+### Заключение
+
+Использован скаффолдинг авторизации Laravel Breeze (для API). Версии Laravel 10, PHP 8.3. ПХП-Сваггер с аннотациями, версия OpenAPI - 3.0.
+
+UUIDы, фабрика фейк данных сделано. Транзакции в запросах не делал. Пагинацию, фильтры и сортировку для некоторых запросов, не делал. Юнит тесты тоже не делал. Версионирование не делал. Обработку моделей в ресурсах не делал. Форматирование кода Пинтом.
+
+По вопросам прошу писать на [Телеграм](https://t.me/artip7)
+
